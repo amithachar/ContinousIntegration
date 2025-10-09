@@ -17,12 +17,12 @@ pipeline{
 	          sh 'mvn compile'
 	       }
 	    }
-	      stage('Build'){
+	    stage('Build'){
 	       steps{
 	          sh 'mvn clean install'
 	       }
 	    } 
-	     stage('Building-Dockerimage'){
+	    stage('Building-Dockerimage'){
 	       steps{
 	          sh  'docker build -t amithachar/continous-integration:1 .' 
 	       }
@@ -32,12 +32,25 @@ pipeline{
 	        sh'''
 	          docker stop c1 || true
 	          docker rm c1 || true
-	          docker run -it -d --name c1 -p 9000:8080 amithachar/continous-integration:1  
+	          docker run -it -d --name c1 -p 9000:8080 amithachar/continous-integration:1
+	          
 	        '''
 	        }
 	    }
+	    stage('Login to Docker Hub') {
+            steps {
+              script{
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin'
+                }
+            }
+          }
 
-
+        stage('Push Docker Image') {
+            steps {
+                sh 'docker push amithachar/continous-integration:1'     
+                  }
+             }
+        }
 	}
-
 }
