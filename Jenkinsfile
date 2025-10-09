@@ -32,8 +32,7 @@ pipeline{
 	        sh'''
 	          docker stop c1 || true
 	          docker rm c1 || true
-	          docker run -it -d --name c1 -p 9000:8080 amithachar/continous-integration:1
-	          
+	          docker run -it -d --name c1 -p 9000:8080 amithachar/continous-integration:1  
 	        '''
 	        }
 	    }
@@ -44,7 +43,7 @@ pipeline{
                     sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin'
                 }
             }
-          }
+        }
         stage('Push Docker Image') {
             steps {
                 sh 'docker push amithachar/continous-integration:1'     
